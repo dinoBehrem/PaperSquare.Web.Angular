@@ -21,4 +21,12 @@ export class AuthService {
   login(loginInsert: LoginInsert): Observable<any>{
     return this._httpClient.post( auth + '/login', loginInsert, _httpOptions);
   }
+
+  refreshToken(refreshToken: string | null) {
+    return this._httpClient.post(auth + '/refresh-token', {token: refreshToken}, _httpOptions);
+  }
+  
+  refreshTokenTest() {
+    return this._httpClient.get(auth + '/refresh-token-test', _httpOptions);
+  }
 }

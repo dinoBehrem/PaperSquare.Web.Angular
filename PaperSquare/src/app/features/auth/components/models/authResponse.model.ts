@@ -1,6 +1,6 @@
 import { TokenResource } from "./tokenResource.model";
 
-export interface AuthenticatorResponse
+export interface AuthResponse
 {
     accessToken: TokenResource;
     refreshToken: TokenResource;

@@ -1,24 +1,56 @@
-import { HttpEvent, HttpHandler, HttpInterceptor, HttpRequest, HTTP_INTERCEPTORS } from "@angular/common/http";
+import { HttpErrorResponse, HttpEvent, HttpHandler, HttpInterceptor, HttpRequest, HTTP_INTERCEPTORS } from "@angular/common/http";
 import { Injectable } from "@angular/core";
-import { Observable } from "rxjs";
+import { catchError, Observable, switchMap, throwError } from "rxjs";
+import { AuthService } from "src/app/features/auth/services/auth.service";
 import { TokenStorageService } from "src/app/features/auth/services/token-storage.service";
 import { accessToken } from "../constants/storage.constant";
+import { EventData } from "../models/event.model";
+import { EventbusService } from "../services/eventbus.service";
 
 @Injectable()
 export class AuthInterceprot implements HttpInterceptor{
-    
-    constructor(private _tokenStorageService: TokenStorageService){}
+    private _isRefreshing: boolean = false;
 
-    intercept(req: HttpRequest<any>, next: HttpHandler): Observable<HttpEvent<any>> {
+    constructor(private _tokenStorageService: TokenStorageService, private _authService: AuthService, private _eventBusService: EventbusService){}
+
+    intercept(req: HttpRequest<any>, next: HttpHandler): Observable<any> {        
+        req = this.addTokenToRequsetHeaders(req);        
+        return next.handle(req).pipe(
+            catchError((err) => {
+                if (err instanceof HttpErrorResponse && err.status === 401) {
+                    return this.handle401Error(req, next);
+                }
+                return throwError(() => err);                 
+            })
+        );
+    }
+
+    private handle401Error(req: HttpRequest<any>, next: HttpHandler): any {       
+        if (!this._isRefreshing) {
+            this._isRefreshing = true;
+                return this._authService.refreshToken(this._tokenStorageService.getRefreshToken()).pipe(
+                    switchMap((res : any) => {
+                        this._tokenStorageService.saveToken(res);
+                        this._isRefreshing = false;
+                        req = this.addTokenToRequsetHeaders(req);
+                        return next.handle(req);
+                    })
+                );            
+        }
         
-        const token = this._tokenStorageService.getToken();
+        req = this.addTokenToRequsetHeaders(req);
+        return next.handle(req);
+    }
 
-        if (token != null) {
+    private addTokenToRequsetHeaders(req: HttpRequest<any>){
+        const token = this._tokenStorageService.getToken();
+        if (token) {
             req = req.clone({
-                headers: req.headers.set(accessToken, `Bearer ${token}`)
+                headers: req.headers.set('Authorization', `Bearer ${token}`)
             });
         }
-        return next.handle(req);
+
+        return req;
     }
 }
 

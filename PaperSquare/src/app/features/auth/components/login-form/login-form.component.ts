@@ -32,16 +32,18 @@ export class LoginFormComponent implements OnInit {
   }
 
   signIn(): void{
-    console.log(this._loginDetails.value);
     this._authService.login(this._loginDetails.value as LoginInsert).subscribe({
       next: (res: any) => {
-        this._tokenStorageService.saveToken(res.accessToken);
+        this._tokenStorageService.saveToken(res);
         this._isLoginFailed = false;
         this._isLoggedIn = true;
       },
       error: (err: any) => {
-        console.log(err);
         this._errorMessage = err.error.errors[0];
       }});
+  }
+
+  refreshToken(){
+    return this._authService.refreshTokenTest().subscribe((data: any) => console.log(data));
   }
 }
