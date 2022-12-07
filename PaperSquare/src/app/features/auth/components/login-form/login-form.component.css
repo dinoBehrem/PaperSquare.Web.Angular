@@ -1,0 +1,35 @@
+#login-form-main {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+}
+
+#logo {
+    margin-bottom: 20px;
+}
+
+app-header {
+    margin-bottom: 36px;
+}
+
+.input-label {
+    font-family: 'Montserrat', sans-serif;
+    font-weight: 600;
+}
+
+.btn-custom {
+    background-color: #191240;
+    outline: none;
+    border: none;
+}
+
+#remember-me {
+    flex-direction: row;
+}
+
+#remember-me-cbx {
+    display: inline-block;
+    height: 20px;
+    width: 20px;
+}
