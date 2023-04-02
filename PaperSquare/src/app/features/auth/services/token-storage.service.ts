@@ -25,7 +25,7 @@ export class TokenStorageService {
     window.localStorage.setItem(refreshToken, tokenResource.refreshToken.token);
   }
   
-  public getToken(): string | null {
+  public getAccessToken(): string | null {
     return window.localStorage.getItem(accessToken);
   }
   
@@ -34,7 +34,7 @@ export class TokenStorageService {
   }
 
   public isLoggedIn(): boolean {
-    const token = this.getToken();
+    const token = this.getAccessToken();
     if (token === '') {
       this.logOut();
       return false;

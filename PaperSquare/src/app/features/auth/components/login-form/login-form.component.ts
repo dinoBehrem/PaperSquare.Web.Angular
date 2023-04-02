@@ -26,7 +26,7 @@ export class LoginFormComponent implements OnInit {
   constructor(private _authService: AuthService, private _tokenStorageService: TokenStorageService){}
 
   ngOnInit(): void {
-    if(this._tokenStorageService.getToken()){
+    if(this._tokenStorageService.getAccessToken()){
       this._isLoggedIn = true;
     }
   }

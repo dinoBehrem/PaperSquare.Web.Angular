@@ -43,7 +43,7 @@ export class AuthInterceprot implements HttpInterceptor{
     }
 
     private addTokenToRequsetHeaders(req: HttpRequest<any>){
-        const token = this._tokenStorageService.getToken();
+        const token = this._tokenStorageService.getAccessToken();
         if (token) {
             req = req.clone({
                 headers: req.headers.set('Authorization', `Bearer ${token}`)
